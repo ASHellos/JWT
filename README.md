@@ -1,3 +1,5 @@
+Release by: Adil Erraad
+
 # Methodology:
 
 In this project, we decided to create a website that revolves around a note application so that anyone can create an account with it and get his own page in which he publishes his notes, where three pages of a registration page, a login page, and a health page have been created for the user, where he can publish and delete his notes
