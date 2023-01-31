@@ -887,9 +887,193 @@ ans stand for response if the response true will reload the page to see the new 
 
 ### **_Main.js_**
 
+#### **Importation**
+
 ``` js
 
+import {addBtn, emailLogin, emailRegister, loginBtn, logoutElement, memoInput,memoUpdate, nameRegister, passwordLogin, passwordRegister, passwordRegister2, registerBtn, resetBtn, tbody} from "./config.js"
+import {authentifier, logout, register} from "./auth.js"
+import { addMemo, deleteMemo, load,virif,updateMemo } from "./memos.js";
 
+window.addEventListener('popstate', function (event) {
+	singlePageManger(getPath())
+
+});
 
 ```
 
+Import series of elemnt from other files  fith function and button
+as we can see this function give the user the possibility of make page is updated correctly when the user navigates through history entries in the browser. This is commonly used to implement single-page applications
+
+#### **Button**
+
+``` js
+
+loginBtn.addEventListener('click',()=>{
+   const login = emailLogin.value
+   const pwd = passwordLogin.value
+   if(!login  || !pwd)
+        return alert("please complete all fileds")
+    
+    authentifier(login,pwd)
+   
+})
+
+logoutElement.addEventListener('click',()=>{
+    logout();
+})
+
+resetBtn.addEventListener('click',()=>{
+    memoInput.value=""
+})
+
+addBtn.addEventListener('click',()=>{
+    const content=memoInput.value
+    if(!content)
+        return alert("please provide a content for your memo")
+    
+    addMemo(content)
+})
+registerBtn.addEventListener('click',()=>{
+    // Recuperation des valeurs
+    const email = emailRegister.value
+    const name = nameRegister.value
+    const pwd = passwordRegister.value
+    const pwd2 = passwordRegister2.value
+
+    // verification des valeurs
+    if(!email || !name || !pwd || !pwd2)
+        return alert("please fill all inputs")
+
+    if(pwd!=pwd2)
+        return alert("passwords didn't match")
+    
+   
+    // appel de la methode register
+    register(email,name,pwd,pwd2)
+
+})
+
+```
+
+in this script we give the button event to do when we click it as:
+- *loginbtn* when clique he will receive data from inputs of login from the element of the login
+and after get his value and check it if is write something or not and send the data to authentification funtion
+- *logoutbtn* this button make the logout work
+- *resetbtn* this button make the value of input memo empty
+- *AddBtn*  this take the value of input and check it and send the value to addMemo function to added
+- *RegisterBtn* This button take the value of the element of form of registration  and check it  and send it to register function to go to the server
+
+#### **Vider**
+
+``` js
+
+export const viderRegister = ()=>{
+    emailRegister.value=""
+    nameRegister.value=""
+    passwordRegister.value=""
+    passwordRegister2.value=""
+}
+export const viderLogin = ()=>{
+    passwordLogin.value=""
+    emailLogin.value=""
+}
+
+```
+
+These two function do the same thing for difference elemnet by emptying his input value
+
+#### **Add to Table**
+
+``` js
+
+export const addMemoToTable=(memo)=>{
+    const {date,content,_id} = memo
+
+    // creation des elemments
+    const tr= document.createElement("tr")
+    const td1= document.createElement("td")
+    const td2= document.createElement("td")
+    const td3= document.createElement("td")
+    const td4= document.createElement("td")
+    const btn= document.createElement("button")
+    const btn1= document.createElement("button")
+
+    // liaison parent.appendChild(fils)
+    tr.appendChild(td1)
+    tr.appendChild(td2)
+    tr.appendChild(td3)
+    tr.appendChild(td4)
+    td4.appendChild(btn)
+    td4.appendChild(btn1)
+    
+    tr.setAttribute("id",_id);
+    //remplissage
+    td1.innerText=_id
+    td2.innerText=content
+    td3.innerText=date
+    btn.innerText="delete"
+    btn1.innerText="Modifiee"
+
+    btn.classList.add("delete")
+    btn1.classList.add("modifier")
+    btn.addEventListener("click",()=>{
+        //TODO : call fetch delete + delete row
+        deleteMemo(_id)
+    })
+    btn1.addEventListener('click',()=>{
+        const content=memoUpdate.value
+        if(!content)
+            alert("please provide a content for memo updated")
+        else
+            updateMemo(_id,content)
+        
+    })
+
+    tbody.appendChild(tr)
+}
+
+```
+
+In these script will receive data as argument and create number of element for this data and append it to a table  and show all the data in the same table with two new button of option who is delete btn and modifier button who give the user the possibility to remove and modifier his  notes by add event to each button and send the id od notes to a function
+
+#### **
+
+``` js
+
+const getPath=()=>window.location.hash || '#welcome'
+const singlePageManger =(path)=>{
+    console.log(path)
+    if(path=="#application")
+    {
+        
+        tbody.innerText=""
+        load();
+    }
+    const components=document.getElementsByClassName("component")
+    Array.from(components).forEach(element=>{
+        element.classList.add('hidden');
+    })
+    const links=document.querySelectorAll('header nav li')
+    Array.from(links).forEach(element=>{
+        element.classList.remove('selected');
+    })
+    document.querySelector(path).classList.remove('hidden')
+    document.querySelector('header nav li:has(a[href="'+path+'"])').classList.add('selected')
+}
+singlePageManger(getPath())
+
+virif()
+
+```
+In the first line we have function to receive the path of the page where we are if there's no page will send us to the welcome page
+and if the path is application will remove the innertext of tbody and call the load() function
+after get all the element of type element with class component and make it hidden
+
+and after find all elemnt of (li) inside a nav  isode a header elemnt  will remove selected class from them
+
+**The purpose of this function is to dynamically update the content of the single-page application based on the URL path, by hiding and showing different elements and updating the styling of navigation links.**
+
+# **_Conclusion_**
+In conclusion to  build project using jwt technologies you need to knew a lot of other technologies and knew how it's work the find a way to link between theme without erreur
+because of project work with server and client side using JSON Web Tokens (JWT) allows for secure communication between the two parties. The server generates a JWT containing user information and sends it to the client after successful authentication. The client can then use this token for subsequent requests to access protected resources from the server, without having to send the user credentials every time. This reduces the risk of sensitive information being intercepted and improves the overall security of the application.
